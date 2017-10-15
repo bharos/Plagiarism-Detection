@@ -1,0 +1,87 @@
+Design
+------
+
+NTuple - Stores one NTuple as a list of strings. Equals and hashcode overriden as mentioned in implementation details
+PlagiarismDetectorInputModel - Contains the input processed to an easily accessible and extensible format
+Synonyms - Class that stores a set of synonyms. Constructor converts a line from synonyms file to set of synonyms
+FileOperations - 2 public methods to be accessed by other classes : getNTuplesFromFile, getSynonymsFromFile. Constructor directly consumes the PlagiarismDetectorInputModel object.
+InputHandler - Handle and validate input and create input model
+PlagiarismDetectorService - Main logic to calculate plagiarism ratio
+PlagiarismDetector - User class/ class which has main method, which calls the service to get plagiarism ratio
+
+
+Implementation details
+-----------------------
+I am creating a HashSet of NTuples from file2, and checking if each tuple in file1 is present in this hashset.
+This is done so that it is much efficient than creating a list of NTuples for file1 and file2 and checking for each NTuple in file1, whether it is present in file2's list of tuples, which is O(M*N) complexity, M=number of NTuples in file1, N = number of NTuples in file2.
+
+Hence, using a hashset of NTuples for file2, we can do this computation in O(M), assuming that contains operation for file2 runs in asymtotically constant time.
+
+For this, I override the equals and hashcode methods in NTuple class.
+In equals method, I check if each corresponding words are same, if not same, check if they are synonyms.
+In hashCode method, for each word in NTuple:
+	1. if a word is present in the synonmys map(meaning the word has synonyms list), add the hashcode of that map.
+	2. if word is not present in synonyms map, add the hashcode of the word.
+Each hashCode is multiplied by small prime number 31 (similar to how hashcode for list is implemented in Java)
+
+For example, let us consider NTuple1 :[for,a,jog] , NTuple2 :[for,a,run] and (run,jog,sprint) are synonyms
+
+The hashCode for "for","a" is taken as hashcode of Strings "for" and "a" for both tuples, as these do not have synonyms.
+The hashCode for "jog" and "run" is taken as the hashcode of the Synonyms object which has the set (run,jog,sprint), so that these two correspond to same hashcode.
+
+
+
+Assumptions
+-----------
+
+1. I am taking N-tuples over all the adjacent words in file, for example, the files:
+
+file1
+-------
+i am going for a run
+
+file2
+------
+i am going
+for a
+run
+
+will have same N-Tuples.
+
+
+2.  Problem says : "the number of N-tuples in file1 that appear in file2, where the tuples are compared by accounting for synonyms"
+
+So, I am checking each tuple in file1, if it appears in any part of file2, and calculating the ratio of number of such tuples in file1 to the total tuples in file1 (this is the reason why I am using hashSet logic as mentioned in implementation details).
+
+3. Also, only taking the words using regex [\w']+, so that words including character ' are matched, all other punctuations are omitted.
+
+Typically,
+file1
+------
+going for. a jog
+
+file2
+-----
+going for
+a run
+
+will give 100% plagiarism ratio, which is what we expect.
+
+
+HOW TO RUN FROM COMMAND LINE
+-----------------------------
+
+PlagiarismDetector has the main method.
+So run this class by providing the appropriate command-line arguments:
+
+1. Compile the files:
+    - Go to the src folder "PlaigiarismDetection\src"
+    - Compile using :  javac PlaigiarismDetection\PlagiarismDetector.java
+
+2. Run the code:
+    - From the src folder, run PlagiarismDetector with arguments. Example:
+      java PlaigiarismDetection.PlagiarismDetector C:\Synonyms
+                               .txt C:\File1.txt C:\File2.txt 3
+
+
+

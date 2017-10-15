@@ -75,32 +75,22 @@ public class FileOperations {
     FileReader fileReader = null;
     try {
       fileReader = new FileReader(fileName);
+      BufferedReader bufferedReader =
+          new BufferedReader(fileReader);
+
+      while ((line = bufferedReader.readLine()) != null) {
+        lines.add(line);
+      }
+      bufferedReader.close();
     } catch (FileNotFoundException e) {
       System.out.println(
           "Unable to open file '" +
               fileName + "'");
-    }
-
-    BufferedReader bufferedReader =
-        new BufferedReader(fileReader);
-
-    try {
-      while ((line = bufferedReader.readLine()) != null) {
-        lines.add(line);
-      }
     } catch (IOException e) {
       System.out.println(
           "Error reading file '"
               + fileName + "'");
     }
-    try {
-      bufferedReader.close();
-    } catch (IOException e) {
-      System.out.println(
-          "Error reading file '"
-              + fileName + "'");
-    }
-
     return lines;
   }
 

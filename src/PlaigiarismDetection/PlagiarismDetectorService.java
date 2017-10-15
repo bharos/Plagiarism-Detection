@@ -40,14 +40,11 @@ public class PlagiarismDetectorService {
     set.addAll(nTuples2);
     for (NTuple t : nTuples1) {
       if (set.contains(t)) {
-        System.out.println("Contains: " + t);
         count++;
       } else {
-        System.out.println(t);
       }
     }
 
-    System.out.println(count + "/" + nTuples1.size());
     return (count / nTuples1.size()) * 100;
   }
 
